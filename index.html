@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>For Catalina ❤️</title>
+
+  <style>
+    :root{
+      --bg1:#ffe1ea;
+      --bg2:#ffd1dc;
+      --bg3:#f7b2c4;
+      --soft:#f6f2ff;
+      --card: rgba(255,255,255,.86);
+      --shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow:hidden;
+      color:#111;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2), var(--bg3));
+    }
+
+    /* "Pages" */
+    .page{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .page.active{ display:flex; }
+
+    /* Page 1 background (Rome) */
+    .rome-bg{
+      background:
+        linear-gradient(rgba(0,0,0,.32), rgba(0,0,0,.32)),
+        var(--rome-image, radial-gradient(circle at top, #2b2b2b, #000));
+      background-size: cover;
+      background-position:center;
+    }
+
+    /* Page 2 background */
+    .soft-bg{
+      background: radial-gradient(circle at top, #ffffff, var(--soft));
+    }
+
+    /* Page 3 background */
+    .love-bg{
+      background: radial-gradient(circle at top, #ffffff, #ffeaf1);
+    }
+
+    .card{
+      width:min(980px, 94vw);
+      border-radius:24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3.4vw, 34px);
+      position:relative;
+      backdrop-filter: blur(8px);
+    }
+
+    .center{
+      text-align:center;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(28px, 5vw, 52px);
+      letter-spacing: .2px;
+    }
+    h2{
+      margin:0 0 10px;
+      font-size: clamp(22px, 4vw, 40px);
+    }
+    p{
+      margin:10px 0 0;
+      font-size: clamp(15px, 2vw, 18px);
+      line-height:1.55;
+    }
+
+    /* Pop-in text */
+    .pop{
+      opacity:0;
+      transform: translateY(10px) scale(.98);
+      animation: popIn .85s ease forwards;
+    }
+    @keyframes popIn{
+      to { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* Arrow button */
+    .nav{
+      position:absolute;
+      right:18px;
+      bottom:18px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .arrow-btn, .cta-btn{
+      border:0;
+      border-radius:999px;
+      padding: 12px 16px;
+      cursor:pointer;
+      font-weight:700;
+      box-shadow: 0 12px 30px rgba(0,0,0,.15);
+    }
+    .arrow-btn{
+      background:#111;
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+    }
+    .arrow{
+      display:inline-block;
+      width:10px; height:10px;
+      border-right:3px solid #fff;
+      border-bottom:3px solid #fff;
+      transform: rotate(-45deg);
+      margin-left:2px;
+    }
+
+    .cta-btn{
+      background:#fff;
+      color:#111;
+      border: 1px solid rgba(0,0,0,.14);
+    }
+
+    .small-note{
+      margin-top:14px;
+      opacity:.75;
+      font-size: 13px;
+    }
+
+    /* Page 4: floating photos */
+    .photos-page{
+      background: radial-gradient(circle at top, #ffffff, #f5f0ff);
+    }
+
+    .photo-stage{
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+    }
+
+    .float-photo{
+      position:absolute;
+      width: min(210px, 38vw);
+      aspect-ratio: 4/3;
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,.18);
+      cursor:pointer;
+      transform: translate3d(0,0,0);
+      will-change: transform;
+      background:#fff;
+      user-select:none;
+    }
+    .float-photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* Modal overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,.55);
+      padding:18px;
+      z-index:50;
+    }
+    .overlay.active{ display:flex; }
+
+    .modal{
+      width:min(980px, 94vw);
+      border-radius:22px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: 0 30px 90px rgba(0,0,0,.35);
+      position:relative;
+      perspective: 1200px;
+    }
+
+    .modal-top{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+
+    .modal-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .icon-btn{
+      border: 1px solid rgba(0,0,0,.15);
+      background:#fff;
+      border-radius:999px;
+      padding: 9px 12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .viewer{
+      width:100%;
+      aspect-ratio: 16/10;
+      background:#000;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* Flip card inside viewer */
+    .flip{
+      width:100%;
+      height:100%;
+      position:absolute;
+      inset:0;
+      transform-style: preserve-3d;
+      transition: transform .6s ease;
+    }
+    .flip.flipped{ transform: rotateY(180deg); }
+
+    .side{
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .front{
+      background:#000;
+    }
+    .back{
+      transform: rotateY(180deg);
+      background: radial-gradient(circle at top, #fff, #ffeaf1);
+      padding: 22px;
+      text-align:center;
+    }
+
+    .zoom-img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      transform-origin:center;
+      transition: transform .2s ease;
+      cursor: zoom-in;
+    }
+    .zoomed .zoom-img{ cursor: zoom-out; }
+
+    .back h3{ margin:0 0 10px; font-size: clamp(18px, 3vw, 26px); }
+    .back p{ margin:0; font-size: clamp(14px, 2vw, 18px); }
+
+    .hint{
+      margin: 8px 0 0;
+      opacity:.72;
+      font-size: 13px;
+    }
+
+    /* Tiny toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.85);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius:999px;
+      font-size: 14px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease;
+      z-index:60;
+    }
+    .toast.show{ opacity:1; }
+  </style>
+</head>
+
+<body>
+
+  <!-- PAGE 1 -->
+  <section class="page rome-bg active" id="page1">
+    <div class="card center">
+      <h1 class="pop">Welcome, Catalina ❤️</h1>
+      <p class="pop" style="animation-delay:.12s">
+        Rome is waiting for us… but first, I made you something.
+      </p>
+      <p class="small-note pop" style="animation-delay:.22s">
+        Tap the arrow →
+      </p>
+
+      <div class="nav">
+        <button class="arrow-btn" data-next="page2">Next <span class="arrow"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page soft-bg" id="page2">
+    <div class="card center">
+      <h2 class="pop">I have a surprise for you…</h2>
+      <p class="pop" style="animation-delay:.15s">
+        One small thing to say what I feel — without distance in the way.
+      </p>
+
+      <div class="nav">
+        <button class="arrow-btn" data-next="page3">Next <span class="arrow"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section class="page love-bg" id="page3">
+    <div class="card center">
+      <h2 class="pop">Okay… here it comes 🎉</h2>
+      <p class="pop" style="animation-delay:.12s">
+        I know I exaggerate sometimes… but I love you.
+        <br/>I want to be with you every day.
+      </p>
+
+      <div style="margin-top:16px" class="pop">
+        <button class="cta-btn" id="loveBtn">Please click here if you love me 🤍</button>
+      </div>
+
+      <p class="hint pop" style="animation-delay:.18s">
+        (You can’t break it — just tap 😊)
+      </p>
+
+      <div class="nav">
+        <button class="arrow-btn" data-next="page4">Next <span class="arrow"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 4 -->
+  <section class="page photos-page" id="page4">
+    <div class="photo-stage" id="stage"></div>
+
+    <div class="toast" id="toast">💌</div>
+
+    <!-- overlay modal -->
+    <div class="overlay" id="overlay" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="Photo viewer">
+        <div class="modal-top">
+          <div style="font-weight:800">Us 📸</div>
+          <div class="modal-actions">
+            <button class="icon-btn" id="flipBtn">Flip</button>
+            <button class="icon-btn" id="zoomBtn">Zoom</button>
+            <button class="icon-btn" id="closeBtn">Close</button>
+          </div>
+        </div>
+
+        <div class="viewer" id="viewer">
+          <div class="flip" id="flipCard">
+            <div class="side front" id="frontSide">
+              <img id="modalImg" class="zoom-img" alt="photo" />
+            </div>
+            <div class="side back" id="backSide">
+              <div>
+                <h3 id="backTitle">A hidden note ❤️</h3>
+                <p id="backText">If you can read this, you’re my favorite person in the world.</p>
+                <p class="hint">Tap “Flip” again to go back.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+    /**********************
+     * 1) BACKGROUND IMAGE (Rome)
+     * Upload a Rome background image to your repo, e.g. /assets/rome.jpg
+     * then set: document.body.style.setProperty('--rome-image', 'url("assets/rome.jpg")');
+     **********************/
+    // document.body.style.setProperty('--rome-image', 'url("assets/rome.jpg")');
+
+    /**********************
+     * 2) PHOTOS LIST
+     * Put your images in /photos and list them here.
+     **********************/
+    const PHOTOS = [
+      { src: "photos/01.jpg", note: "I love you. Simple. True." },
+      { src: "photos/02.jpg", note: "This one is my comfort memory." },
+      { src: "photos/03.jpg", note: "I’d relive this day 100 times." },
+      { src: "photos/04.jpg", note: "You look at life better than anyone." },
+      { src: "photos/05.jpg", note: "Rome will be even better than this." },
+      { src: "photos/06.jpg", note: "Thank you for choosing us." },
+      { src: "photos/07.jpg", note: "Distance didn’t win. We did." },
+      { src: "photos/08.jpg", note: "My favorite place is next to you." }
+    ];
+
+    /**********************
+     * NAVIGATION (fake pages)
+     **********************/
+    const pages = ["page1","page2","page3","page4"];
+    function showPage(id){
+      for (const p of pages){
+        const el = document.getElementById(p);
+        el.classList.toggle("active", p === id);
+      }
+      // restart pop animation by forcing reflow on visible page elements
+      const active = document.getElementById(id);
+      active.querySelectorAll(".pop").forEach(node => {
+        node.style.animation = "none";
+        node.offsetHeight; // reflow
+        node.style.animation = "";
+      });
+    }
+
+    document.querySelectorAll("[data-next]").forEach(btn => {
+      btn.addEventListener("click", () => showPage(btn.dataset.next));
+    });
+
+    /**********************
+     * CONFETTI TRIGGERS
+     **********************/
+    function bigConfetti(){
+      const duration = 1200;
+      const end = Date.now() + duration;
+      (function frame(){
+        confetti({ particleCount: 6, spread: 70, origin: { x: 0.2, y: 0.65 }});
+        confetti({ particleCount: 6, spread: 70, origin: { x: 0.8, y: 0.65 }});
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+      confetti({ particleCount: 140, spread: 95, startVelocity: 35, origin: { y: 0.68 }});
+    }
+
+    document.getElementById("loveBtn").addEventListener("click", () => {
+      bigConfetti();
+      toast("💖 I knew it.");
+    });
+
+    // Also confetti when moving from page3 -> page4 (on Next)
+    document.querySelector('#page3 [data-next="page4"]').addEventListener("click", () => {
+      setTimeout(bigConfetti, 450);
+      setTimeout(() => toast("📸 Tap a photo…"), 700);
+    });
+
+    /**********************
+     * TOAST
+     **********************/
+    const toastEl = document.getElementById("toast");
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 1400);
+    }
+
+    /**********************
+     * FLOATING PHOTOS
+     **********************/
+    const stage = document.getElementById("stage");
+    const WIGGLE = 8; // px
+    const SPEED_MIN = 0.18;
+    const SPEED_MAX = 0.42;
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    const floaters = [];
+
+    function createFloater(item, idx){
+      const div = document.createElement("div");
+      div.className = "float-photo";
+      div.dataset.index = String(idx);
+
+      const img = document.createElement("img");
+      img.src = item.src;
+      img.alt = "Us photo";
+      div.appendChild(img);
+
+      // initial position
+      const pad = 14;
+      const x = rand(pad, window.innerWidth - pad - 220);
+      const y = rand(pad, window.innerHeight - pad - 180);
+
+      const vx = rand(SPEED_MIN, SPEED_MAX) * (Math.random() < .5 ? 1 : -1);
+      const vy = rand(SPEED_MIN, SPEED_MAX) * (Math.random() < .5 ? 1 : -1);
+
+      const rot = rand(-8, 8);
+
+      const floater = { el: div, x, y, vx, vy, rot };
+      div.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+
+      div.addEventListener("click", () => openModal(idx));
+      stage.appendChild(div);
+      floaters.push(floater);
+    }
+
+    PHOTOS.forEach(createFloater);
+
+    function animate(){
+      const maxX = window.innerWidth;
+      const maxY = window.innerHeight;
+
+      for (const f of floaters){
+        f.x += f.vx;
+        f.y += f.vy;
+
+        const rectW = f.el.getBoundingClientRect().width;
+        const rectH = f.el.getBoundingClientRect().height;
+
+        if (f.x <= 8 || f.x + rectW >= maxX - 8) f.vx *= -1;
+        if (f.y <= 8 || f.y + rectH >= maxY - 8) f.vy *= -1;
+
+        // subtle wiggle
+        const wigX = Math.sin(Date.now()/900 + f.x) * (WIGGLE/2);
+        const wigY = Math.cos(Date.now()/950 + f.y) * (WIGGLE/2);
+
+        f.el.style.transform = `translate(${f.x + wigX}px, ${f.y + wigY}px) rotate(${f.rot}deg)`;
+      }
+
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    window.addEventListener("resize", () => {
+      // no heavy recalculation; bounce logic will keep them in view
+    });
+
+    /**********************
+     * MODAL: flip + zoom + close
+     **********************/
+    const overlay = document.getElementById("overlay");
+    const modalImg = document.getElementById("modalImg");
+    const flipCard = document.getElementById("flipCard");
+    const backText = document.getElementById("backText");
+    const viewer = document.getElementById("viewer");
+
+    let currentIndex = 0;
+    let zoomed = false;
+
+    function openModal(idx){
+      currentIndex = idx;
+      zoomed = false;
+      viewer.classList.remove("zoomed");
+      modalImg.style.transform = "scale(1)";
+      flipCard.classList.remove("flipped");
+
+      const item = PHOTOS[idx];
+      modalImg.src = item.src;
+      backText.textContent = item.note || "I love you.";
+
+      overlay.classList.add("active");
+      overlay.setAttribute("aria-hidden", "false");
+      toast("↩ tap outside to go back");
+    }
+
+    function closeModal(){
+      overlay.classList.remove("active");
+      overlay.setAttribute("aria-hidden", "true");
+      zoomed = false;
+      viewer.classList.remove("zoomed");
+      modalImg.style.transform = "scale(1)";
+      flipCard.classList.remove("flipped");
+    }
+
+    // Click outside modal closes
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.getElementById("closeBtn").addEventListener("click", closeModal);
+
+    document.getElementById("flipBtn").addEventListener("click", () => {
+      flipCard.classList.toggle("flipped");
+    });
+
+    document.getElementById("zoomBtn").addEventListener("click", () => {
+      zoomed = !zoomed;
+      viewer.classList.toggle("zoomed", zoomed);
+      modalImg.style.transform = zoomed ? "scale(1.65)" : "scale(1)";
+    });
+
+    // Also allow clicking the image to zoom
+    modalImg.addEventListener("click", () => {
+      zoomed = !zoomed;
+      viewer.classList.toggle("zoomed", zoomed);
+      modalImg.style.transform = zoomed ? "scale(1.65)" : "scale(1)";
+    });
+
+    // ESC closes
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("active")) closeModal();
+    });
+
+    /**********************
+     * Optional: subtle confetti on first open
+     **********************/
+    setTimeout(() => confetti({ particleCount: 60, spread: 70, origin: { y: 0.35 } }), 800);
+  </script>
+</body>
+</html>
