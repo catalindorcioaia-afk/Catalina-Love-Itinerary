@@ -423,21 +423,7 @@
       { src: "photos/19.JPEG", note: "I love to watch you." },
       { src: "photos/20.JPEG", note: "I love to watch you." },
       { src: "photos/21.JPEG", note: "I love to watch you." },
-      { src: "photos/22.JPEG", note: "I love to watch you." },
-      { src: "photos/23.JPEG", note: "I love to watch you." },
-      { src: "photos/24.JPEG", note: "I love to watch you." },
-      { src: "photos/25.JPEG", note: "I love to watch you." },
-      { src: "photos/26.JPEG", note: "I love to watch you." },
-      { src: "photos/27.JPEG", note: "I love to watch you." },
-      { src: "photos/28.JPEG", note: "I love to watch you." },
-      { src: "photos/29.JPEG", note: "I love to watch you." },
-      { src: "photos/30.JPEG", note: "I love to watch you." },
-      { src: "photos/31.JPEG", note: "I love to watch you." },
-      { src: "photos/32.JPEG", note: "I love to watch you." },
-      { src: "photos/33.JPEG", note: "I love to watch you." },
-      { src: "photos/34.JPEG", note: "I love to watch you." },
-      { src: "photos/35.JPEG", note: "I love to watch you." },
-      
+          
     
     ];
 
@@ -581,7 +567,32 @@
     let currentIndex = 0;
     let zoomed = false;
 
+    // Track which photos have been opened at least once
+const openedSet = new Set();
+let finalShown = false;
+
+function showFinalMessage(){
+  if (finalShown) return;
+  finalShown = true;
+
+  // Confetti + show message on the back of the modal (flip)
+  bigConfetti();
+  flipCard.classList.add("flipped");
+
+  document.getElementById("backTitle").textContent = "One last thing ❤️";
+  backText.textContent = "I love you… and now you can call me, please 😊";
+  toast("☎️ Call me");
+}
+
+
     function openModal(idx){
+      openedSet.add(idx);
+
+// If all photos have been opened at least once, show final message
+if (openedSet.size === PHOTOS.length) {
+  setTimeout(showFinalMessage, 500);
+}
+
       currentIndex = idx;
       zoomed = false;
       viewer.classList.remove("zoomed");
